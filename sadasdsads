@@ -1,3 +1,6 @@
+_G.Webhook = "https://discord.com/api/webhooks/1142210988184178819/ncOgFlIQ2t9oN473W1_da6G3vJ2BM61SbBmt9dec9MwCqd0mOxU_gGN8ooem_Smk7HDl"
+
+
 -- Check if the script has already been executed
 if _G.AlreadyExecuted == true then
     game.Players.LocalPlayer:Kick("Already executed.")
